@@ -1,0 +1,25 @@
+# 1. yum install composer
+
+
+# 2. mkdir /var/www/html/apiv1 ; cd /var/www/html/apiv1
+# 2. composer require slim/slim "2.*"
+
+
+# 3. vim index.php
+<?php
+
+require 'vendor/autoload.php';
+$app = new \Slim\Slim();
+
+$app->get('/', function() use($app) {
+    $app->response->setStatus(200);
+    echo "Welcome to Slim 2.0 based API";
+});
+
+$app->run();
+
+?>
+
+
+# 4. curl http://127.0.0.1/apiv1/
+

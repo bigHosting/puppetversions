@@ -1,0 +1,44 @@
+
+1. Set AllowOverride to All for root folder
+
+# vim /etc/httpd/conf/httpd.conf
+<Directory "/var/www/html">
+.........
+AllowOverride All
+</Directory>
+
+
+
+2. Change owner of api to apache.apache for logs to be able to be written to /var/www/html/apiv1/logs/
+
+# umask 022
+# chown -R root.root /var/www/html/apiv1/
+# chown -R apache.apache /var/www/html/apiv1/logs
+
+Install composer:
+# cd /var/www/html/apiv1/
+# vim composer.json:
+{
+    "require": {
+        "slim/slim": "2.*",
+        "monolog/monolog": "1.19"
+    }
+}
+# rm -f composer.lock
+# composer install
+
+3. Change mysql password in php scripts
+
+# egrep -Hira PASSWORD_HERE *
+4. Test API
+
+# curl http://127.0.0.1/apiv1/
+
+{
+    "error": false,
+    "message": "API",
+    "status": "200"
+}
+
+
+

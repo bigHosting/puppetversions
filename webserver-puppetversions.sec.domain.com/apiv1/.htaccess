@@ -1,0 +1,16 @@
+<IfModule mod_rewrite.c>
+
+        RewriteEngine   On
+
+        #RewriteRule .* - [env=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+        #SetEnv SLIM_MODE development
+
+        RewriteCond     %{REQUEST_FILENAME} !-d
+        RewriteCond     %{REQUEST_FILENAME} !-f
+        RewriteCond     %{REQUEST_URI} !=/favicon.ico
+        RewriteRule     ^(.*)$ index.php/$1 [L,QSA]
+
+        # redirect trailing '/'
+        #RewriteRule     ^(.*)/$ /$1 [L,R=301]
+
+</IfModule>
