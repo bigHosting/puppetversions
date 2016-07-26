@@ -1,5 +1,7 @@
-<!-- //link ke skrip db_koneksi -->
-<?php include 'db_koneksi.php';?>
+<?php
+        require_once dirname(__FILE__).'/apiv1/lib/smplPDO.php';     // php mysql pdo driver class
+
+?>
 <!-- // -->
 <!DOCTYPE html>
 <html lang="en">
@@ -41,7 +43,7 @@
 							</tr>
 						</thead>
 						<tbody>
-							<?php while($row =mysql_fetch_array($db)){ ?>
+                                                        <?php foreach( $db->get_all( 'main' ) as $row ) { ?>
 							<tr>
 								<td><?=$row['Id'] ?></td>
 								<td><?=$row['Server'] ?></td>
