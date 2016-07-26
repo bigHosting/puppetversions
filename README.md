@@ -1,5 +1,11 @@
 puppetversions tool is built for grabbing package version information from puppet using mcollective, perl, Slim 2.0 and datatablesphpmysql
 
+Requirements:
+  a) PHP 5.4, should work on 5.3+
+  b) Mysql 5.5
+  c) Apache 2.2
+  d) perl and cron
+  e) mcollective already working
 
 How it works/Integration:
 
