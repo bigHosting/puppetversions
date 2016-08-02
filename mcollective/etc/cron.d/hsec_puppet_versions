@@ -1,3 +1,3 @@
-#
-# run puppet versions
-55 7 * * * MY_USER_CONFIGURED_IN_MCOLLECTIVE /usr/bin/perl /localservices/sbin/puppet_versions.pl > /dev/null 2>&1
+# run puppet versions and owners
+23 7 * * * root /usr/bin/perl /localservices/sbin/puppet_versions.pl > /dev/null 2>&1
+45 8 * * * root /usr/bin/perl /localservices/sbin/puppet_owners.pl   > /dev/null 2>&1

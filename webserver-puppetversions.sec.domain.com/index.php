@@ -1,5 +1,10 @@
 <?php
-        require_once dirname(__FILE__).'/apiv1/lib/smplPDO.php';     // php mysql pdo driver class
+
+// allow direct access from the web
+define("DIRECT", 1);
+
+require_once dirname(__FILE__) . '/apiv1/lib/smplPDO.php';     // php mysql pdo driver class
+require_once dirname(__FILE__) . 'apiv1/lib/DB.php';
 
 ?>
 <!-- // -->
@@ -43,6 +48,7 @@
 							</tr>
 						</thead>
 						<tbody>
+
                                                         <?php foreach( $db->get_all( 'main' ) as $row ) { ?>
 							<tr>
 								<td><?=$row['Id'] ?></td>

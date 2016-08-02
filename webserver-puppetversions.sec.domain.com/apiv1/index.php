@@ -38,60 +38,51 @@ $app->container->singleton('log', function () {
 require_once dirname(__FILE__).'/lib/smplPDO.php';     // php mysql pdo driver class
 require_once dirname(__FILE__).'/lib/functions.php';   // php common functions file
 
-/* ===> curl https://puppetversions.sec.domain.com/apiv1/  */
+$mediatypes = array( 'text/html', 'application/json' );
+
+
+
+// ===> https://puppetversions.sec.domain.com/apiv1/
 $app->get('/', function() use($app)
 {
         // http status = 200, error = 0, response = API
         json(200, 0, array("response" => "API"));
 });
 
-/* ===> curl https://puppetversions.sec.domain.com/apiv1/echo/abcd  */
-$app->get('/echo/:name', function($name)
-{
-        if(preg_match("/^[a-zA-Z0-9-\._]+$/", $name) ) 
-        {
-                // http status = 200, error = 0, response = $name
-                json(200, 0, array("response" => $name) );
-        }
-        // if we got here it means we got an error
-        json(403, 1, array("response" => "Invalid chars detected") );
-});
-
-/* ===> curl https://puppetversions.sec.domain.com/apiv1/denied  */
+// ===> curl  https://puppetversions.sec.domain.com/apiv1/denied
 $app->get('/denied', function() use ($app)
 {
         // http status = 403, error = 1, response = denied
         json(403, 1, array("response" => "denied") );
 });
 
-/* ===> curl  https://puppetversions.sec.domain.com/apiv1/help  */
+
+
+// ===> $ curl https://puppetversions.sec.domain.com/apiv1/help
 $app->get('/help', function() use ($app)
 {
-        // http status = 403, error = 1, response = denied
-        json(200, 0, array("response"               => "help",
-                           "/apiv1/exists/"         => "curl -X POST -d 'Server=rrad3c50.domain.eu&Product=glibc' https://puppetversions.sec.domain.com/apiv1/puppetversions/exists/",
-                           "/apiv1/insertORupdate/" => "curl -X POST -d 'Server=api2c45.domain.eu&Product=glibc&Version=2.12&Release=1.166.el6_7.7&Comment=AutomaticInseretTest' https://puppetversions.sec.domain.com/apiv1/puppetversions/insertORupdate/",
-                           "/apiv1/insert/"         => "curl -X POST -d 'Server=rrad4c50.domain.eu&Product=glibc&Version=2.12&Release=1.166.el6_7.7&Comment=AutomaticInsert' https://puppetversions.sec.domain.com/apiv1/puppetversions/insert/",
-                           "/apiv1/select/"         => "curl -X GET  https://puppetversions.sec.domain.com/apiv1/puppetversions/select/2"
-                          )
+        // read README.md and print contents on screen
+        $app->response()->body(
+            file_get_contents(__DIR__ . '/README.md')
         );
 });
 
 
-// billing section
+
+
+// versions section
 $app->group('/puppetversions', function () use ($app)
 {
         // whitelist IPs to be able to access the API
         $allowed_ips = array("127.0.0.1", "10.70.17.1", "10.70.17.2", "10.70.17.3" );
         if (!in_array ($app->request->getIP(), $allowed_ips))
         {
-                json(403, 1, array("response" => "Authorization denied") );
+                json(403, 1, array("response" => "Authorization denied: IP restricted") );
         }
 
         include_once 'routes/puppetversions.php';
 
 });
-
 
 /* ===> curl https://puppetversions.sec.domain.com/apiv1/random_url_that_does_not_exist  */
 $app->notFound(function ()

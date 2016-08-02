@@ -46,7 +46,8 @@ sub trim;              # left & right trim function
 my $URL = "https://puppetversions.sec.domain.com/apiv1/puppetversions/insertORupdate/";
 
 # what package version we need to pull?
-my @packages = ('centos-release',
+my @packages = ('bash',
+                'centos-release',
                 'curl',
                 'gcc',
                 'glibc',
