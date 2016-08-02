@@ -64,7 +64,7 @@ puppetversions tool is built for listing package version information from puppet
 
 
 - screenshot
-    ![Datatable PHP SQL](http://i1087.photobucket.com/albums/j474/Zulfindra_Juliant/dat-php-sql_zps8df060a2.png)
+    ![PuppetVersions image](https://github.com/bigHosting/puppetversions/raw/master/puppetversions.png)
 
 ### License :
 - Opensource
