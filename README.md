@@ -12,6 +12,7 @@ puppetversions tool is built for listing package version information from puppet
 
 ### Install :
 - configure mcollective on a secure host and run the script from cron
+
     $ sudo cp puppet_versions.pl /localservices/sbin/ ; sudo chmod 755 /localservices/sbin/puppet_versions.pl
     $ sudo cp puppet_owners.pl /localservices/sbin/ ; sudo chmod 755 /localservices/sbin/puppet_owners.pl
     $ sudo cp hsec_puppet_versions /etc/cron.d/ ; sudo chmod 640 /etc/cron.d/hsec_puppet_versions
