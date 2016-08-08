@@ -26,6 +26,10 @@ $app->get("/releases(/)", function() use($app)
                         break;
         }
 
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME)  . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
 
         // DB user/password settings
         include_once 'lib/DB.php';
@@ -40,9 +44,12 @@ $app->get("/releases(/)", function() use($app)
                 {
                         array_push ($info, $entry['RELEASE']);
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info);
         } else {
-                json(404, 1, array("response" => "releases: Incorrect query or 0 results") );
+                $message = array("response" => "releases: Incorrect query or 0 results");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $message ); } // cache section
+                json(200, 1, $message );
         }
 });
 

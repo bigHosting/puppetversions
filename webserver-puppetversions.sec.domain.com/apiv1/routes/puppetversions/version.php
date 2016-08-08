@@ -31,17 +31,24 @@ $app->get("/version/:version(/)", function($version) use($app)
         }
 
 
+        $check = array( 'Version' => "$version");
+
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
+
 
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Version' => "$version") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
                 //$results = $db->get_all( 'main', array('Product' => "$product"), array( 'Id', 'Server', 'Product', 'Version', 'Release', 'Date', 'Comment' ) );
-                $results = $db->get_all( 'main', array('Version' => "$version") );
+                $results = $db->get_all( 'main', $check );
 
                 foreach( $results as $row)
                 {
@@ -54,9 +61,12 @@ $app->get("/version/:version(/)", function($version) use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(404, 1, array("response" => "version: 0 rows returned for $version") );
+                $info = array("response" => "version: 0 rows returned for $version");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 201, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 
@@ -90,14 +100,19 @@ $app->post("/version(/)", function() use($app)
                         break;
         }
 
+        $check = array( 'Version' => "$version");
 
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
 
         // DATABASE SECTION
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Version' => "$version") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
@@ -115,9 +130,12 @@ $app->post("/version(/)", function() use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(404, 1, array("response" => "version: 0 rows returned for $version") );
+                $info = array("response" => "version: 0 rows returned for $version");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 

@@ -28,6 +28,13 @@ $app->get("/versions(/)", function() use($app)
                         break;
         }
 
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME)  . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
+
+
+        $info    = array();
 
         // DB user/password settings
         include_once 'lib/DB.php';
@@ -37,14 +44,16 @@ $app->get("/versions(/)", function() use($app)
 
         if (!empty($results))
         {
-                $info    = array();
                 foreach ($results as $entry)
                 {
                         array_push ($info, $entry['VERSION']);
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info);
         } else {
-                json(404, 1, array("response" => "select: Incorrect query") );
+                $info = array("response" => "select: Incorrect query");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 

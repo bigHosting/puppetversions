@@ -14,11 +14,19 @@ $app->get("/release/:release(/)", function($release) use($app)
 
         $info = array();
 
+        $check = array( 'Release' => "$release");
+
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
+
+
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Release' => "$release") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
@@ -36,15 +44,20 @@ $app->get("/release/:release(/)", function($release) use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(404, 1, array("response" => "release: 0 rows returned for $release") );
+                $info = array("response" => "release: 0 rows returned for $release");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 
 
 $app->post("/release(/)", function() use($app)
 {
+
+        $info = array();
 
         $req = array ('Release');
 
@@ -73,19 +86,24 @@ $app->post("/release(/)", function() use($app)
                         break;
         }
 
+        $check = array( 'Release' => "$release");
 
-        $info = array();
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
+
 
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Release' => "$release") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
                 //$results = $db->get_all( 'main', array('Product' => "$product"), array( 'Id', 'Server', 'Product', 'Version', 'Release', 'Date', 'Comment' ) );
-                $results = $db->get_all( 'main', array('Release' => "$release") );
+                $results = $db->get_all( 'main', $check );
 
                 foreach( $results as $row)
                 {
@@ -98,9 +116,12 @@ $app->post("/release(/)", function() use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(404, 1, array("response" => "release: 0 rows returned for $release") );
+                $info = array("response" => "release: 0 rows returned for $release");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 

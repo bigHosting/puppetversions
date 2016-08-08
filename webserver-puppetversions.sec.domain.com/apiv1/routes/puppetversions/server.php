@@ -4,24 +4,30 @@ defined('DIRECT') OR exit('No direct script access allowed');
 
 $app->get("/server/:server(/)", function($server) use($app)
 {
+        $info = array();
 
         if (!preg_match('/^[a-zA-Z0-9\.-_]+$/',$server))
         {
                 json(404, 1, array("response" => "server: Invalid chars in server name") );
         }
 
-        $info = array();
+        $check = array( 'Server' => "$server");
+
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
 
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Server' => "$server") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
                 //$results = $db->get_all( 'main', array('Product' => "$product"), array( 'Id', 'Server', 'Product', 'Version', 'Release', 'Date', 'Comment' ) );
-                $results = $db->get_all( 'main', array('Server' => "$server") );
+                $results = $db->get_all( 'main', $check );
 
                 foreach( $results as $row)
                 {
@@ -34,9 +40,12 @@ $app->get("/server/:server(/)", function($server) use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(404, 1, array("response" => "server: 0 rows returned for $server") );
+                $info = array("response" => "server: 0 rows returned for $server");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 
@@ -73,18 +82,24 @@ $app->post("/server(/)", function() use($app)
                         break;
         }
 
+        $check = array( 'Server' => "$server");
+
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
 
         // DATABASE SECTION
         // DB user/password settings
         include_once 'lib/DB.php';
 
         // count number of matches
-        $total = $db->get_count( 'main', array( 'Server' => "$server") );
+        $total = $db->get_count( 'main', $check );
         if ( $total > 0 )
         {
 
                 //$results = $db->get_all( 'main', array('Product' => "$product"), array( 'Id', 'Server', 'Product', 'Version', 'Release', 'Date', 'Comment' ) );
-                $results = $db->get_all( 'main', array('Server' => "$server") );
+                $results = $db->get_all( 'main', $check );
 
                 foreach( $results as $row)
                 {
@@ -97,9 +112,12 @@ $app->post("/server(/)", function() use($app)
                                          'Comment' => $row['Comment']
                                        );
                 }
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
                 json(200, 0, $info );
         } else {
-                json(200, 1, array("response" => "server: 0 rows returned for $server") );
+                $info = array("response" => "server: 0 rows returned for $server");
+                if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                json(200, 1, $info );
         }
 });
 

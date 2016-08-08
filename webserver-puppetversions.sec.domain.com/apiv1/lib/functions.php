@@ -1,15 +1,15 @@
 <?php
 
-// http://stackoverflow.com/questions/255312/how-to-get-a-variable-name-as-a-string-in-php
-function print_var_name($var) {
-        foreach($GLOBALS as $var_name => $value) {
-                if ($value === $var) {
-                        return $var_name;
-                }
-        }
-
-        return false;
-}
+//// http://stackoverflow.com/questions/255312/how-to-get-a-variable-name-as-a-string-in-php
+//function print_var_name($var) {
+//        foreach($GLOBALS as $var_name => $value) {
+//                if ($value === $var) {
+//                        return $var_name;
+//                }
+//        }
+//
+//        return false;
+//}
 
 function check_params_text ($req = array() )
 {
@@ -115,54 +115,66 @@ function json($status_code = 200, $app_code = 0, $data = array())
         die();
 }
 
-
-/*
-function echo_json( $response, $status_code ) {
+// simple cache implementation
+function cache_read ($file = NULL)
+{
+        // initialize Slim
         $app = \Slim\Slim::getInstance();
 
-        // log answer
-        $app->log->info($app->request->getMethod() . " from IP " .$app->request->getIP() . " for ". $_SERVER['REQUEST_URI'] . " w status code " . $status_code);
+        if ( !$file )
+        {
+                json(200, 1, array ( "response" => "cache_read needs a file as argument") );
+        }
 
-        // Http response code
-        $app->status($status_code);
+        $cachetime = 600; // Seconds to cache files for
 
-        // setting response content type to json
-        $app->contentType('application/json');
-        echo (json_encode($response, JSON_PRETTY_PRINT));
-}
+        //print " Checking if file " . $file . " exists\n";
+        //exit;
 
-function echo_json_exit( $response, $status_code ) {
-        $app = \Slim\Slim::getInstance();
+        // read the file only if : file exists, mod time is less than $cachetime and file is readable
+        if ( (file_exists($file)) && (time() - filemtime($file) < $cachetime) && (is_readable($file)) )
+        {
+                $string = file_get_contents ($file);
+                echo $string;
+                //@readfile($file);
+        }
 
-        // log answer
-        $app->log->info($app->request->getMethod() . " from IP " .$app->request->getIP() . " for ". $_SERVER['REQUEST_URI'] . " w status code " . $status_code);
-
-        // Http response code
-        $app->status($status_code);
-
-        // setting response content type to json
-        $app->contentType('application/json');
-        echo (json_encode($response, JSON_PRETTY_PRINT));
+        // terminate connection after cache read
         $app->stop();
         die();
 }
 
-
-function get_api_key($key)
+function cache_write($file = NULL, $status_code = 200, $app_code = 0, $data = array())
 {
+        // initialize Slim
+        $app = \Slim\Slim::getInstance();
 
-        $req_key = array( 'apiKey'=>"$key" );
-
-        $db = new smplPDO( "mysql:host=127.0.0.1;dbname=vuln", "root", 'PASSWORD_HERE' );
-
-        if( $db->exists( 'api_keys', $req_key ) )
+        if ( !$file )
         {
-                return TRUE;
-        } else {
-                return FALSE;
+                json(200, 1, array ( "response" => "cache_write needs a file as argument") );
         }
+
+        // data to be written to disk
+        $buffer = json_encode(array( 'httpstatus' => "$status_code", 'error' => "$app_code", 'data' => $data ),JSON_PRETTY_PRINT);
+
+        if ( file_exists($file) )
+        {
+                // can we delete existing file ?
+                if ( !unlink($file) )
+                {
+                        json(200, 1, array ( "response" => "cache_write cannot delete file '$file'") );
+                }
+        }
+
+                //can we create new file ?
+        if ( !file_put_contents ($file, $buffer) )
+        {
+                json(200, 1, array ( "response" => "cache_write cannot wrote to file '$file'") );
+        }
+
 }
-*/
+
+
 
 ?>
 

@@ -53,6 +53,11 @@ $app->post("/insertORupdate/", function() use($app)
         // DATABASE SECTION
         $check = array( 'Server'=>"$server", 'Product'=>"$product" );
 
+        // cache section
+        $cache = 1;
+        $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
+        if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
+
         // DB user/password settings
         include_once 'lib/DB.php';
 
@@ -74,9 +79,13 @@ $app->post("/insertORupdate/", function() use($app)
 
                 if ( $db->num_rows == 1 )
                 {
-                        json(200, 0, array("response" => "insertORupdate: row updated successfully", "Id" => $rowId ) );
+                        $info = array("response" => "insertORupdate: row updated successfully", "Id" => $rowId );
+                        if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
+                        json(200, 0, $info );
                 } else {
-                        json(200, 1, array("response" => "insertORupdate: row update failed", "Id" => $rowId ) );
+                        $info = array("response" => "insertORupdate: row update failed", "Id" => $rowId );
+                        if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                        json(200, 1, $info );
                 }
 
         } else {
@@ -92,9 +101,13 @@ $app->post("/insertORupdate/", function() use($app)
 
                 if ( $db->num_rows == 1)
                 {
-                        json(200, 0, array("response" => "insertORupdate: row inserted successfully", "Id" => $db->insert_id ) );
+                        $info = array("response" => "insertORupdate: row inserted successfully", "Id" => $db->insert_id );
+                        if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 0, $info ); } // cache section
+                        json(200, 0, $info );
                 } else {
-                        json(200, 1, array("response" => "insertORupdate: row insert failed") );
+                        $info = array("response" => "insertORupdate: row insert failed");
+                        if ( !empty ($cache) && strlen($cache) ) { cache_write ( $cachefile, 200, 1, $info ); } // cache section
+                        json(200, 1, $info );
                 }
         }
 
