@@ -56,6 +56,10 @@ puppetversions tool is built for listing package version information from puppet
     mysql> FLUSH PRIVILEGES;
     mysql> SHOW GRANTS FOR 'puppetversions'@'webserver.sec.domain.com';
 
+    # Cleanup old records via mysql events. Must have event_scheduler = 1 set in /etc/my.cnf
+    mysql> CREATE EVENT cleanup_main   ON SCHEDULE EVERY 6 HOUR DO DELETE FROM main   WHERE Date < NOW() - INTERVAL 2 DAY;
+    mysql> CREATE EVENT cleanup_owners ON SCHEDULE EVERY 6 HOUR DO DELETE FROM owners WHERE Date < NOW() - INTERVAL 2 DAY;
+
 - configure a web server to be able to receive data from the secure host and insert information into the database server
     $ see webserver directory, copy the same structure to a virtual host
 
