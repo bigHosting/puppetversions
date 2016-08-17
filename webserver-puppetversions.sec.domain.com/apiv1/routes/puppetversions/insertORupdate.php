@@ -54,7 +54,7 @@ $app->post("/insertORupdate/", function() use($app)
         $check = array( 'Server'=>"$server", 'Product'=>"$product" );
 
         // cache section
-        $cache = 1;
+        $cache = 0;
         $cachefile = "cache/" . pathinfo($_SERVER['PHP_SELF'], PATHINFO_FILENAME) . "_" . implode("_", array_keys($check)) . "_" . implode("_", $check) . '.json';
         if ( !empty ($cache) && strlen($cache) && file_exists($cachefile) ) { cache_read ($cachefile); }
 
